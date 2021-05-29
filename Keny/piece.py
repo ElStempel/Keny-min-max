@@ -1,6 +1,6 @@
 import pygame
 from .constant import RED, WHITE, SQUARE_SIZE, GRAY, CROWN
-
+#Change King for Pepper
 class Piece:
     PADDING = 15
     OUTLINE = 2
@@ -9,12 +9,13 @@ class Piece:
         self.row = row
         self.col = col
         self.color = color
+        #TURN OFF PEPPER True/False
         self.king = False
         
-        if self.color == RED:
-            self.direction = -1
-        else:
-            self.direction = 1
+        # if self.color == GRAY:
+        #     self.direction = -1
+        # else:
+        #     self.direction = 1
         
         self.x = 0
         self.y = 0
