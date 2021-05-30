@@ -221,6 +221,7 @@ class Board:
 
             return moves
 
+        #TODO naprawić by tylko mógł bić
         elif direction == 1:  # going backward BIAŁY tylko bicie
             
             for r in range(row, stop, step):
@@ -299,6 +300,7 @@ class Board:
 
             return moves
 
+        #TODO naprawić by tylko mógł bić
         elif direction == -1:  # going backward SZARY tylko bicie
             
             for r in range(row, stop, step):

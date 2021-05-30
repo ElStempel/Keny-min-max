@@ -45,6 +45,9 @@ class Game:
             self.board.move(self.selected,row,col)
             skipped = self.valid_moves[(row, col)]
             if skipped:
+                for sk_piece in skipped:
+                    if sk_piece.color == self.selected.color:
+                        skipped.remove(sk_piece)
                 self.board.remove(skipped)
             self.change_turn()
         else:
