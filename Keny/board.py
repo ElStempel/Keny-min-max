@@ -99,8 +99,8 @@ class Board:
                      right_stop, step_right, right, left_stop, step_left, left))
         moves.update(self._traverse_up(direction, row, col, piece.color,
                      left_stop, step_left, left, right_stop, step_right, right))
-        #moves.update(self._traverse_down(direction, row, col, piece.color,
-                     #right_stop, step_right, right, left_stop, step_left, left))
+        moves.update(self._traverse_down(direction, row, col, piece.color,
+                     left_stop, step_left, left, right_stop, step_right, right))
 
         return moves
 
@@ -126,11 +126,14 @@ class Board:
                                  step_left, left-1, right_stop, step_right, right-1, skipped=last))
                     moves.update(self._traverse_up(direction, row, col-2, color, left_stop,
                                  step_left, left-1, right_stop, step_right, right-1, skipped=last))
+                    moves.update(self._traverse_down(direction, row, col-2, color, left_stop,
+                                 step_left, left-1, right_stop, step_right, right-1, skipped=last))
                     # tu wsadzić szukanie kolejnych ruchów w górę i dół
                 break
 
             elif current.color == color:
-                break
+                #break
+                last = [current] #do skakania nad swoimi
             else:
                 last = [current]
 
@@ -160,11 +163,14 @@ class Board:
                                  step_right, right+1, left_stop, step_left, left+1, skipped=last))
                     moves.update(self._traverse_up(direction, row, col+2, color, left_stop,
                                  step_left, left+1, right_stop, step_right, right+1, skipped=last))
+                    moves.update(self._traverse_down(direction, row, col+2, color, left_stop,
+                                 step_left, left+1, right_stop, step_right, right+1, skipped=last))
                     # tu wsadzić szukanie kolejnych ruchów w górę i dół
                 break
 
             elif current.color == color:
-                break
+                #break
+                last = [current] #do skakania nad swoimi
             else:
                 last = [current]
 
@@ -176,6 +182,7 @@ class Board:
         moves = {}
         last = []
         up = row - 1
+        down = row + 1
         stop = 0
         step = -1
 
@@ -205,7 +212,8 @@ class Board:
 
                     break
                 elif current.color == color:
-                    break
+                    #break
+                    last = [current] #do skakania nad swoimi
                 else:
                     last = [current]
 
@@ -213,12 +221,46 @@ class Board:
 
             return moves
 
+        #TODO naprawić by tylko mógł bić
         elif direction == 1:  # going backward BIAŁY tylko bicie
-            pass
+            
+            for r in range(row, stop, step):
+                if up < 0:
+                    break
+
+                current = self.board[up][col]
+                if current == 0:
+                    if skipped and not last:
+                        break
+                    elif skipped:
+                        moves[(up, col)] = last + skipped
+                    else:
+                        moves[(up, col)] = last
+
+                    if last:
+                        moves.update(self._traverse_right(direction, row-2, col, color, right_stop,
+                                     step_right, right, left_stop, step_left, left, skipped=last))
+                        moves.update(self._traverse_left(direction, row-2, col, color, left_stop,
+                                     step_left, left, right_stop, step_right, right, skipped=last))
+                        moves.update(self._traverse_up(direction, row-2, col, color, left_stop,
+                                     step_left, left, right_stop, step_right, right, skipped=last))
+                        # tu wsadzić szukanie kolejnych ruchów w górę i dół i boki
+
+                    break
+                elif current.color == color:
+                    break
+                    #last = [current] #do skakania nad swoimi
+                else:
+                    last = [current]
+
+                up -= 1
+            
+            return moves
 
     def _traverse_down(self, direction, row, col, color, left_stop, step_left, left, right_stop, step_right, right, skipped=[]):
         moves = {}
         last = []
+        up = row - 1
         down = row + 1  # row + 1
         stop = 7
         step = 1
@@ -230,7 +272,43 @@ class Board:
                     break
 
                 current = self.board[down][col]
-                if current == 7:
+                if current == 0:
+                    if skipped and not last:
+                        break
+                    elif skipped:
+                        moves[(down, col)] = last + skipped
+                    else:
+                        moves[(down, col)] = last
+
+                    if last:
+                        moves.update(self._traverse_right(direction, row+2, col, color, right_stop,
+                                     step_right, right, left_stop, step_left, left, skipped=last))
+                        moves.update(self._traverse_left(direction, row+2, col, color, left_stop,
+                                     step_left, left, right_stop, step_right, right, skipped=last))
+                        moves.update(self._traverse_down(direction, row+2, col, color, left_stop,
+                                     step_left, left, right_stop, step_right, right, skipped=last))
+                        # tu wsadzić szukanie kolejnych ruchów w górę i dół i boki
+
+                    break
+                elif current.color == color:
+                    #break
+                    last = [current] #do skakania nad swoimi
+                else:
+                    last = [current]
+
+                down += 1
+
+            return moves
+
+        #TODO naprawić by tylko mógł bić
+        elif direction == -1:  # going backward SZARY tylko bicie
+            
+            for r in range(row, stop, step):
+                if down > 7:
+                    break
+
+                current = self.board[down][col]
+                if current == 0:
                     if skipped and not last:
                         break
                     elif skipped:
@@ -256,6 +334,3 @@ class Board:
                 down += 1
 
             return moves
-
-        elif direction == -1:  # going backward SZARY tylko bicie
-            pass
