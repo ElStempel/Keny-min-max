@@ -1,20 +1,21 @@
 import pygame
-from .constant import RED, WHITE, SQUARE_SIZE, GRAY
-
+from .constant import RED, WHITE, SQUARE_SIZE, GRAY, CROWN
+#Change King for Pepper
 class Piece:
-    PADDING = 10
+    PADDING = 15
     OUTLINE = 2
     
     def __init__(self,row,col,color):
         self.row = row
         self.col = col
         self.color = color
+        #TURN OFF PEPPER True/False
         self.king = False
         
-        if self.color == RED:
-            self.direction = -1
-        else:
-            self.direction = 1
+        # if self.color == GRAY:
+        #     self.direction = -1
+        # else:
+        #     self.direction = 1
         
         self.x = 0
         self.y = 0
@@ -29,9 +30,15 @@ class Piece:
     
     def draw(self, win):
         radius = SQUARE_SIZE // 2 - self.PADDING
-        pygame.draw.circle(win, self.color, (self.x, self.y), radius + self.OUTLINE)
-        pygame.draw.circle(win, GRAY, (self.x, self.y), radius)
+        pygame.draw.circle(win, GRAY, (self.x, self.y), radius + self.OUTLINE)
+        pygame.draw.circle(win, self.color, (self.x, self.y), radius)
+        if self.king:
+            win.blit(CROWN, (self.x - CROWN.get_width()//2, self.y - CROWN.get_height()//2))
     
+    def move(self, row, col):
+        self.row = row
+        self.col = col
+        self.calc_pos()
+
     def __repr__(self):
         return str(self.color)
-    
