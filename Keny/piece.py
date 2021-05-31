@@ -12,10 +12,10 @@ class Piece:
         #TURN OFF PEPPER True/False
         self.king = False
         
-        if self.color == GRAY:
-            self.direction = -1
-        else:
-            self.direction = 1
+        # if self.color == GRAY:
+        #     self.direction = -1
+        # else:
+        #     self.direction = 1
         
         self.x = 0
         self.y = 0
