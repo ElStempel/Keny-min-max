@@ -25,6 +25,7 @@ def main():
 
         if game.winner() != None:
             print(game.winner())
+            break
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
