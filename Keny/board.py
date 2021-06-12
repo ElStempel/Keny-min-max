@@ -95,30 +95,31 @@ class Board:
             direction = 0  # both
         if piece.color==GRAY:
             moves.update(self._traverse_left(direction, row, col, piece.color,
-                        left_stop, step_left, left, right_stop, step_right, right))
+                        left_stop, step_left, left, right_stop, step_right, right,False))
             moves.update(self._traverse_right(direction, row, col, piece.color,
-                        right_stop, step_right, right, left_stop, step_left, left))
+                        right_stop, step_right, right, left_stop, step_left, left,False))
             moves.update(self._traverse_up(direction, row, col, piece.color,
-                        left_stop, step_left, left, right_stop, step_right, right))
+                        left_stop, step_left, left, right_stop, step_right, right,False))
             moves.update(self._traverse_down(direction, row, col, piece.color,
-                     left_stop, step_left, left, right_stop, step_right, right))
+                     left_stop, step_left, left, right_stop, step_right, right,False))
         else:
             moves.update(self._traverse_left(direction, row, col, piece.color,
-                        left_stop, step_left, left, right_stop, step_right, right))
+                        left_stop, step_left, left, right_stop, step_right, right,False))
             moves.update(self._traverse_right(direction, row, col, piece.color,
-                        right_stop, step_right, right, left_stop, step_left, left))
+                        right_stop, step_right, right, left_stop, step_left, left,False))
             moves.update(self._traverse_down(direction, row, col, piece.color,
-                     left_stop, step_left, left, right_stop, step_right, right))
+                     left_stop, step_left, left, right_stop, step_right, right,False))
             moves.update(self._traverse_up(direction, row, col, piece.color,
-                     left_stop, step_left, left, right_stop, step_right, right))
+                     left_stop, step_left, left, right_stop, step_right, right,False))
                      
 
         return moves
 
-    def _traverse_left(self, direction, row, col, color, left_stop, step_left, left, right_stop, step_right, right, skipped=[]):
+    def _traverse_left(self, direction, row, col, color, left_stop, step_left, left, right_stop, step_right, right,hostile, skipped=[]):
         moves = {}
         last = []
         friendly= False
+        enemy=hostile
         for r in range(col, left_stop, step_left):
             if left < 0:
                 break
@@ -134,15 +135,15 @@ class Board:
             
                 if last and not friendly:
                     moves.update(self._traverse_left(direction, row, col-2, color, left_stop,
-                                 step_left, left-1, right_stop, step_right, right-1, skipped=last))
+                                 step_left, left-1, right_stop, step_right, right-1,enemy, skipped=skipped+last))
                     moves.update(self._traverse_up(direction, row, col-2, color, left_stop,
-                                 step_left, left-1, right_stop, step_right, right-1, skipped=last))
+                                 step_left, left-1, right_stop, step_right, right-1,enemy, skipped=skipped+last))
                     moves.update(self._traverse_down(direction, row, col-2, color, left_stop,
-                                 step_left, left-1, right_stop, step_right, right-1, skipped=last))
+                                 step_left, left-1, right_stop, step_right, right-1,enemy, skipped=skipped+last))
                     # tu wsadzić szukanie kolejnych ruchów w górę i dół
                 break
 
-            elif current.color == color:
+            elif current.color == color and not enemy:
                 #break              
                 nextField = self.board[row][left-1]
                 if nextField ==0:
@@ -151,22 +152,25 @@ class Board:
                 else:
                     break
                  #do skakania nad swoimi
-            else:
+            elif current.color != color:
                 nextField = self.board[row][left-1]
                 if nextField ==0:
+                    enemy = True
                     last = [current]
-                    
+                  
                 else:
                     break
-
+            else:
+                break
             left -= 1
 
         return moves
 
-    def _traverse_right(self, direction, row, col, color, right_stop, step_right, right, left_stop, step_left, left, skipped=[]):
+    def _traverse_right(self, direction, row, col, color, right_stop, step_right, right, left_stop, step_left, left,hostile, skipped=[]):
         moves = {}
         last = []
         friendly= False
+        enemy =hostile
         for r in range(col, right_stop, step_right):
             if right > 7:
                 break
@@ -182,15 +186,15 @@ class Board:
 
                 if last and not friendly:
                     moves.update(self._traverse_right(direction, row, col+2, color, right_stop,
-                                 step_right, right+1, left_stop, step_left, left+1, skipped=last))
+                                 step_right, right+1, left_stop, step_left, left+1,enemy,skipped=skipped+last))
                     moves.update(self._traverse_up(direction, row, col+2, color, left_stop,
-                                 step_left, left+1, right_stop, step_right, right+1, skipped=last))
+                                 step_left, left+1, right_stop, step_right, right+1,enemy, skipped=skipped+last))
                     moves.update(self._traverse_down(direction, row, col+2, color, left_stop,
-                                 step_left, left+1, right_stop, step_right, right+1, skipped=last))
+                                 step_left, left+1, right_stop, step_right, right+1,enemy, skipped=skipped+last))
                     # tu wsadzić szukanie kolejnych ruchów w górę i dół
                 break
 
-            elif current.color == color:
+            elif current.color == color and not enemy:
                 #break     
                 if right<7:
                     nextField = self.board[row][right+1]
@@ -200,19 +204,21 @@ class Board:
                     else:
                         break
                  #do skakania nad swoimi
-            else:
+            elif current.color != color:
                 if right<7:
                     nextField = self.board[row][right+1]
                     if nextField ==0:
+                        enemy=True
                         last = [current]   
                     else:
                         break
-
+            else:
+                break
             right += 1
 
         return moves
 
-    def _traverse_up(self, direction, row, col, color, left_stop, step_left, left, right_stop, step_right, right, skipped=[]):
+    def _traverse_up(self, direction, row, col, color, left_stop, step_left, left, right_stop, step_right, right,hostile, skipped=[]):
         moves = {}
         last = []
         up = row - 1
@@ -220,7 +226,9 @@ class Board:
         stop = 0
         step = -1
         friendly= False
-        if direction == -1:  # going forward SZARY
+        enemy = hostile
+        
+        if direction == -1 or direction == 0:  # going forward SZARY
 
             for r in range(row, stop, step):
                 if up < 0:
@@ -237,15 +245,15 @@ class Board:
 
                     if last and not friendly:
                         moves.update(self._traverse_right(direction, row-2, col, color, right_stop,
-                                     step_right, right, left_stop, step_left, left, skipped=last))
+                                     step_right, right, left_stop, step_left, left,enemy, skipped=skipped+last))
                         moves.update(self._traverse_left(direction, row-2, col, color, left_stop,
-                                     step_left, left, right_stop, step_right, right, skipped=last))
+                                     step_left, left, right_stop, step_right, right, enemy,skipped=skipped+last))
                         moves.update(self._traverse_up(direction, row-2, col, color, left_stop,
-                                     step_left, left, right_stop, step_right, right, skipped=last))
+                                     step_left, left, right_stop, step_right, right,enemy, skipped=skipped+last))
                         # tu wsadzić szukanie kolejnych ruchów w górę i dół i boki
 
                     break
-                elif current.color == color:
+                elif current.color == color and not enemy:
                     #break
                     if up>0:
                         nextField = self.board[up-1][col]
@@ -254,66 +262,58 @@ class Board:
                             friendly = True
                         else:
                             break #do skakania nad swoimi
-                else:
+                elif current.color != color:
                     if up>0:
                         nextField = self.board[up-1][col]
                         if nextField ==0:
+                            enemy=True
                             last = [current]
                         else:
                             break
-
+                else:
+                    break
                 up -= 1
 
             return moves
 
         #TODO naprawić by tylko mógł bić
-        elif direction == 1:  # going backward BIAŁY tylko bicie/ szary ruch do przodu
+        elif direction == 1:  # going backward BIAŁY tylko bicie
             
             for r in range(row, stop, step):
                 if up < 0:
                     break
 
                 current = self.board[up][col]
-                if current == 0:
-                    if skipped and not last and not friendly:
-                        break
-                    elif skipped and not friendly:
-                        moves[(up, col)] = last + skipped
-                   # else:
-                     #   moves[(up, col)] = last
-
-                    if last and not friendly:
-                        moves.update(self._traverse_right(direction, row-2, col, color, right_stop,
-                                     step_right, right, left_stop, step_left, left, skipped=last))
-                        moves.update(self._traverse_left(direction, row-2, col, color, left_stop,
-                                     step_left, left, right_stop, step_right, right, skipped=last))
-                        moves.update(self._traverse_up(direction, row-2, col, color, left_stop,
-                                     step_left, left, right_stop, step_right, right, skipped=last))
-                        # tu wsadzić szukanie kolejnych ruchów w górę i dół i boki
-
-                    break
-                elif current.color == color:
-                    #break
-                    if up>0:
+                #moves[(up, col)] = last
+                if current == 0 :
+                    if enemy:
+                        #enemy = False
+                        
+                        if last != [] and skipped != [] and not friendly:
+                            
+                            moves.update(self._traverse_down(direction, row-2, col, color, left_stop,
+                                        step_left, left, right_stop, step_right, right,enemy ,skipped=skipped+last))
+                            moves.update(self._traverse_right(direction, row-2, col, color, right_stop,
+                                        step_right, right, left_stop, step_left, left,enemy, skipped=skipped+last))
+                            moves.update(self._traverse_left(direction, row-2, col, color, left_stop,
+                                        step_left, left, right_stop, step_right, right,enemy, skipped=skipped+last))
+                    break   
+                        # tu wsadzić szukanie kolejnych ruchów w górę i dół i boki    
+                elif current.color != color:
+                    if down<7:
                         nextField = self.board[up-1][col]
                         if nextField ==0:
                             last = [current]
-                            friendly = True
-                        else:
-                            break #do skakania nad swoimi
-                else:
-                    if up>0:
-                        nextField = self.board[up-1][col]
-                        if nextField ==0:
-                            last = [current]
+                            enemy=True
+                            moves[(up-1, col)] =skipped +last
                         else:
                             break
-
+                else: break
                 up -= 1
             
             return moves
 
-    def _traverse_down(self, direction, row, col, color, left_stop, step_left, left, right_stop, step_right, right, skipped=[]):
+    def _traverse_down(self, direction, row, col, color, left_stop, step_left, left, right_stop, step_right, right, hostile,skipped=[]):
         moves = {}
         last = []
         up = row - 1
@@ -321,8 +321,9 @@ class Board:
         stop = 7
         step = 1
         friendly= False
+        enemy = hostile
         
-        if direction == 1:  # going forward BIAŁY
+        if direction == 1 or direction == 0:  # going forward BIAŁY
 
             for r in range(row, stop, step):
                 if down > 7:
@@ -339,15 +340,16 @@ class Board:
 
                     if last and not friendly:
                         moves.update(self._traverse_right(direction, row+2, col, color, right_stop,
-                                     step_right, right, left_stop, step_left, left, skipped=last))
+                                     step_right, right, left_stop, step_left, left,enemy, skipped=skipped+last))
                         moves.update(self._traverse_left(direction, row+2, col, color, left_stop,
-                                     step_left, left, right_stop, step_right, right, skipped=last))
+                                     step_left, left, right_stop, step_right, right,enemy, skipped=skipped+last))
                         moves.update(self._traverse_down(direction, row+2, col, color, left_stop,
-                                     step_left, left, right_stop, step_right, right, skipped=last))
+                                     step_left, left, right_stop, step_right, right,enemy, skipped=skipped+last))
+                        
                         # tu wsadzić szukanie kolejnych ruchów w górę i dół i boki
 
                     break
-                elif current.color == color:
+                elif current.color == color and not enemy:
                     #break
                     if down<7:
                         nextField = self.board[down+1][col]
@@ -362,9 +364,10 @@ class Board:
                         nextField = self.board[down+1][col]
                         if nextField ==0:
                             last = [current]
+                            enemy=True
                         else:
                             break
-
+                else: break            
                 down += 1
 
             return moves
@@ -377,43 +380,30 @@ class Board:
                     break
 
                 current = self.board[down][col]
-                if current == 0:
-                    if skipped and not last and not friendly:
-                        break
-                    elif skipped and not friendly:
-                        moves[(down, col)] = last + skipped
+                if current == 0 :
+                    if enemy:
+                        #enemy = False
                         
-                    else:
-                      moves[(down, col)] = last
-
-                    if last and not friendly:
-                        moves.update(self._traverse_right(direction, row+2, col, color, right_stop,
-                                     step_right, right, left_stop, step_left, left, skipped=last))
-                        moves.update(self._traverse_left(direction, row+2, col, color, left_stop,
-                                     step_left, left, right_stop, step_right, right, skipped=last))
-                        moves.update(self._traverse_down(direction, row+2, col, color, left_stop,
-                                    step_left, left, right_stop, step_right, right, skipped=last))
-                        # tu wsadzić szukanie kolejnych ruchów w górę i dół i boki
-
-                    break
-                elif current.color == color:
-                    #break 
+                        if last != [] and skipped != [] and not friendly:
+                            
+                            moves.update(self._traverse_down(direction, row+2, col, color, left_stop,
+                                        step_left, left, right_stop, step_right, right,enemy ,skipped=skipped+last))
+                            moves.update(self._traverse_right(direction, row+2, col, color, right_stop,
+                                        step_right, right, left_stop, step_left, left,enemy, skipped=skipped+last))
+                            moves.update(self._traverse_left(direction, row+2, col, color, left_stop,
+                                        step_left, left, right_stop, step_right, right,enemy, skipped=skipped+last))
+                    break   
+                        # tu wsadzić szukanie kolejnych ruchów w górę i dół i boki    
+                elif current.color != color:
                     if down<7:
                         nextField = self.board[down+1][col]
                         if nextField ==0:
                             last = [current]
-                            friendly = True
+                            enemy=True
+                            moves[(down+1, col)] =skipped +last
                         else:
-                            break #do skakania nad swoimi  
-                else:
-                    if(color == GRAY):
-                        if down<7:
-                            nextField = self.board[down+1][col]
-                            if nextField ==0:
-                                last = [current]
-                            else:
-                                break
-                    else: break
+                            break
+                else: break
                     
 
                 down += 1
