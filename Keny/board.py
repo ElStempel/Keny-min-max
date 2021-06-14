@@ -23,7 +23,8 @@ class Board:
                                  col*SQUARE_SIZE, SQUARE_SIZE-2, SQUARE_SIZE-2))
 
     def evaluate(self):
-        return self.white_left - self.grey_left + (self.white_kings * 0.5 - self.grey_kings * 0.5)
+        return self.white_left - self.grey_left + (self.white_kings * 0.25 - self.grey_kings * 0.25)
+        #self.white_left - self.grey_left + (self.white_kings * 0.5 - self.grey_kings * 0.5)
 
     def get_all_pieces(self, color):
         pieces = []
