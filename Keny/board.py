@@ -22,6 +22,18 @@ class Board:
                 pygame.draw.rect(win, CREME, (row*SQUARE_SIZE,
                                  col*SQUARE_SIZE, SQUARE_SIZE-2, SQUARE_SIZE-2))
 
+    def evaluate(self):
+        return self.white_left - self.grey_left + (self.white_kings * 0.25 - self.grey_kings * 0.25)
+        #self.white_left - self.grey_left + (self.white_kings * 0.5 - self.grey_kings * 0.5)
+
+    def get_all_pieces(self, color):
+        pieces = []
+        for row in self.board:
+            for piece in row:
+                if piece != 0 and piece.color == color:
+                    pieces.append(piece)
+        return pieces
+
     def move(self, piece, row, col):
         self.board[piece.row][piece.col], self.board[row][col] = self.board[row][col], self.board[piece.row][piece.col]
         piece.move(row, col)
@@ -144,20 +156,26 @@ class Board:
                 break
 
             elif current.color == color and not enemy:
-                #break              
-                nextField = self.board[row][left-1]
-                if nextField ==0:
-                    last = [current]
-                    friendly = True
+                #break
+                if left >0:
+                    nextField = self.board[row][left-1]
+                    if nextField ==0:
+                        last = [current]
+                        friendly = True
+                    else:
+                        break
                 else:
                     break
                  #do skakania nad swoimi
             elif current.color != color:
-                nextField = self.board[row][left-1]
-                if nextField ==0:
-                    enemy = True
-                    last = [current]
+                if left>0:
+                    nextField = self.board[row][left-1]
+                    if nextField ==0:
+                        enemy = True
+                        last = [current]
                   
+                    else:
+                        break
                 else:
                     break
             else:
@@ -300,7 +318,7 @@ class Board:
                     break   
                         # tu wsadzić szukanie kolejnych ruchów w górę i dół i boki    
                 elif current.color != color:
-                    if down<7:
+                    if up>0:
                         nextField = self.board[up-1][col]
                         if nextField ==0:
                             last = [current]

@@ -2,6 +2,7 @@ import pygame
 from Keny.constant import SQUARE_SIZE, WHITE, WIDTH, HEIGHT, GRAY
 from Keny.board import Board
 from Keny.game import Game
+from minimax.algorithm import minimax
 FPS = 60
 
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -22,10 +23,14 @@ def main():
 
     while run:
         clock.tick(FPS)
+        
+        if game.turn == WHITE:
+            value, new_board = minimax(game.get_board(), 3, WHITE, game)
+            game.ai_move(new_board)
 
         if game.winner() != None:
             print(game.winner())
-            break
+            run = False
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
