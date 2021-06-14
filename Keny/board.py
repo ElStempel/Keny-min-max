@@ -156,20 +156,26 @@ class Board:
                 break
 
             elif current.color == color and not enemy:
-                #break              
-                nextField = self.board[row][left-1]
-                if nextField ==0:
-                    last = [current]
-                    friendly = True
+                #break
+                if left > 0:              
+                    nextField = self.board[row][left-1]
+                    if nextField ==0:
+                        last = [current]
+                        friendly = True
+                    else:
+                        break
                 else:
                     break
                  #do skakania nad swoimi
             elif current.color != color:
-                nextField = self.board[row][left-1]
-                if nextField ==0:
-                    enemy = True
-                    last = [current]
-                  
+                if left > 0:
+                    nextField = self.board[row][left-1]
+                    if nextField ==0:
+                        enemy = True
+                        last = [current]
+                    
+                    else:
+                        break
                 else:
                     break
             else:
@@ -312,7 +318,7 @@ class Board:
                     break   
                         # tu wsadzić szukanie kolejnych ruchów w górę i dół i boki    
                 elif current.color != color:
-                    if down<7:
+                    if up>0:
                         nextField = self.board[up-1][col]
                         if nextField ==0:
                             last = [current]
