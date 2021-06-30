@@ -29,7 +29,11 @@ def main():
             game.ai_move(new_board)
 
         if game.winner() != None:
-            print(game.winner())
+            if (game.winner() != WHITE):
+                print("WHITE WON!")
+            else:
+                print("GRAY WON!")
+            #print(game.winner())
             run = False
 
         for event in pygame.event.get():
